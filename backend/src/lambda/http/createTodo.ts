@@ -14,6 +14,7 @@ export const handler: APIGatewayProxyHandler = async (
 ): Promise<APIGatewayProxyResult> => {
   const newTodo: CreateTodoRequest = JSON.parse(event.body)
 
+  // TODO: Refactor
   const authorization = event.headers.Authorization
   const split = authorization.split(' ')
   const jwtToken = split[1]

@@ -16,7 +16,7 @@ export const handler: APIGatewayProxyHandler = async (
   const todos = await getAllTodos(userId)
 
   return {
-    statusCode: 201,
+    statusCode: 200,
     headers: {
       'Access-Control-Allow-Origin': '*'
     },

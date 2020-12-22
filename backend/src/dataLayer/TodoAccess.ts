@@ -11,7 +11,8 @@ import { TodoItem } from '../models/TodoItem'
 export class TodoAccess {
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly todostable = process.env.TODOS_TABLE
+    private readonly todostable = process.env.TODOS_TABLE,
+    private readonly todoIdIndex = process.env.TODO_ID_INDEX
   ) {}
 
   async getAllTodos(userId: string): Promise<TodoItem[]> {
@@ -40,6 +41,24 @@ export class TodoAccess {
       .promise()
 
     return todo
+  }
+
+  // TODO type defenition & return null if no item
+  async getTodo(todoId: string, userId: string): Promise<TodoItem | null> {
+    const todo = await this.docClient
+      .query({
+        TableName: this.todostable,
+        IndexName: this.todoIdIndex,
+        KeyConditionExpression: 'todoId = :todoId AND userId = :userId',
+        ExpressionAttributeValues: {
+          ':todoId': todoId,
+          ':userId': userId
+        }
+      })
+      .promise()
+
+    if (!todo.Items.length) return null
+    return todo.Items[0] as TodoItem
   }
 }
 

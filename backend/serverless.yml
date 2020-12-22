@@ -29,7 +29,6 @@ functions:
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
 
-  # TODO: Configure this function
   GetTodos:
     handler: src/lambda/http/getTodos.handler
     events:
@@ -38,7 +37,6 @@ functions:
           path: todos
           authorizer: Auth
 
-  # TODO: Configure this function
   CreateTodo:
     handler: src/lambda/http/createTodo.handler
     events:
@@ -47,12 +45,16 @@ functions:
           path: todos
           authorizer: Auth
 
+  UpdateTodo:
+    handler: src/lambda/http/updateTodo.handler
+    events:
+      - http:
+          method: patch
+          path: todos/{todoId}
+          authorizer: Auth
+
 resources:
   Resources:
-    # The DynamoDb table for storing TODO's
-    # Not sure if this is going to need some tweaking
-    # Might need to read up on local vs global secondary indexes
-    # might need to better udnerstand what to use as partition, sort and index
     TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
