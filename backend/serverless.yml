@@ -38,6 +38,15 @@ functions:
           path: todos
           authorizer: Auth
 
+  # TODO: Configure this function
+  CreateTodo:
+    handler: src/lambda/http/createTodo.handler
+    events:
+      - http:
+          method: post
+          path: todos
+          authorizer: Auth
+
 resources:
   Resources:
     # The DynamoDb table for storing TODO's

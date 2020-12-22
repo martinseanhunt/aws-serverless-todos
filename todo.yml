@@ -1,20 +1,4 @@
 # TODO: Configure this function
-GetTodos:
-  handler: src/lambda/http/getTodos.handler
-  events:
-    - http:
-        method: get
-        path: todos
-
-# TODO: Configure this function
-CreateTodo:
-  handler: src/lambda/http/createTodo.handler
-  events:
-    - http:
-        method: post
-        path: todos
-
-# TODO: Configure this function
 UpdateTodo:
   handler: src/lambda/http/updateTodo.handler
   events:
