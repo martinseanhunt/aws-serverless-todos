@@ -6,9 +6,10 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-offline
 
-# TODO: Uncomment to enable individual packaging
+# TODO: try updating package version
+# This does not appear to be working in WSL2
 # package:
-#   individually: true
+#  individually: true
 
 provider:
   name: aws
@@ -38,6 +39,11 @@ functions:
           method: get
           path: todos
           authorizer: Auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
   CreateTodo:
     handler: src/lambda/http/createTodo.handler
