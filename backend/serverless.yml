@@ -53,6 +53,14 @@ functions:
           path: todos/{todoId}
           authorizer: Auth
 
+  DeleteTodo:
+    handler: src/lambda/http/deleteTodo.handler
+    events:
+      - http:
+          method: delete
+          path: todos/{todoId}
+          authorizer: Auth
+
 resources:
   Resources:
     TodosTable:

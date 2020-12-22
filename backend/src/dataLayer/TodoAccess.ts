@@ -88,6 +88,18 @@ export class TodoAccess {
       })
       .promise()
   }
+
+  async deleteTodo(todo: TodoItem): Promise<void> {
+    await this.docClient
+      .delete({
+        TableName: this.todostable,
+        Key: {
+          userId: todo.userId,
+          createdAt: todo.createdAt
+        }
+      })
+      .promise()
+  }
 }
 
 function createDynamoDBClient() {

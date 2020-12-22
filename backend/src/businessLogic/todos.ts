@@ -45,3 +45,18 @@ export async function updateTodo(
 
   console.log(`UPDATED TODO: ${todo.todoId}`)
 }
+
+export async function deleteTodo(
+  userId: string,
+  todoId: string
+): Promise<void> {
+  // Get the todo item that belongs to a user
+  const todo = await todoAccess.getTodo(todoId, userId)
+
+  if (!todo) throw new Error('Todo not found with id for user')
+
+  // delete the item
+  await todoAccess.deleteTodo(todo)
+
+  console.log(`DELETED TODO: ${todo.todoId}`)
+}
