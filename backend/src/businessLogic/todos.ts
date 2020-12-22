@@ -60,3 +60,7 @@ export async function deleteTodo(
 
   console.log(`DELETED TODO: ${todo.todoId}`)
 }
+
+export async function getSignedUrl(todoId: string): Promise<string> {
+  return await todoAccess.getSignedUrl(`${todoId}-${new Date().toISOString()}`)
+}

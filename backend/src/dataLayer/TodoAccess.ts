@@ -14,7 +14,12 @@ export class TodoAccess {
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
     private readonly todostable = process.env.TODOS_TABLE,
-    private readonly todoIdIndex = process.env.TODO_ID_INDEX
+    private readonly todoIdIndex = process.env.TODO_ID_INDEX,
+    private readonly s3 = new XAWS.S3({
+      signatureVersion: 'v4'
+    }),
+    private readonly bucketName = process.env.IMAGES_BUCKET_NAME,
+    private readonly expirationTime = process.env.SIGNED_URL_EXPIRATION
   ) {}
 
   async getAllTodos(userId: string): Promise<TodoItem[]> {
@@ -58,8 +63,6 @@ export class TodoAccess {
       })
       .promise()
 
-    console.log(todo)
-
     if (!todo.Items.length) return null
     return todo.Items[0] as TodoItem
   }
@@ -99,6 +102,16 @@ export class TodoAccess {
         }
       })
       .promise()
+  }
+
+  async getSignedUrl(imageId: string): Promise<string> {
+    const uploadUrl = this.s3.getSignedUrl('putObject', {
+      Bucket: this.bucketName,
+      Key: imageId,
+      Expires: parseInt(this.expirationTime)
+    })
+
+    return uploadUrl
   }
 }
 
