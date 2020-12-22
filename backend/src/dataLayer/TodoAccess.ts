@@ -2,6 +2,8 @@ import * as AWS from 'aws-sdk'
 // import * as AWSXRay from 'aws-xray-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
+import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
+
 // TODO: implement Xray tracing
 // const XAWS = AWSXRay.captureAWS(AWS)
 const XAWS = AWS
@@ -43,7 +45,6 @@ export class TodoAccess {
     return todo
   }
 
-  // TODO type defenition & return null if no item
   async getTodo(todoId: string, userId: string): Promise<TodoItem | null> {
     const todo = await this.docClient
       .query({
@@ -57,8 +58,35 @@ export class TodoAccess {
       })
       .promise()
 
+    console.log(todo)
+
     if (!todo.Items.length) return null
     return todo.Items[0] as TodoItem
+  }
+
+  async updateTodo(
+    todo: TodoItem,
+    updatedTodo: UpdateTodoRequest
+  ): Promise<void> {
+    await this.docClient
+      .update({
+        TableName: this.todostable,
+        Key: {
+          userId: todo.userId,
+          createdAt: todo.createdAt
+        },
+        UpdateExpression:
+          'SET #N = :todoName, dueDate = :dueDate, done = :done',
+        ExpressionAttributeNames: {
+          '#N': 'name'
+        },
+        ExpressionAttributeValues: {
+          ':todoName': updatedTodo.name,
+          ':dueDate': updatedTodo.name,
+          ':done': updatedTodo.done
+        }
+      })
+      .promise()
   }
 }
 

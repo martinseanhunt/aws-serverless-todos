@@ -34,53 +34,14 @@ export async function updateTodo(
   userId: string,
   todoId: string,
   updatedTodo: UpdateTodoRequest
-): Promise<TodoItem> {
+): Promise<void> {
   // Get the todo item that belongs to a user
   const todo = await todoAccess.getTodo(todoId, userId)
 
   if (!todo) throw new Error('Todo not found with id for user')
 
   // update the item
-  const updated = await todoAccess.updateTodo(todoId, updatedTodo)
+  await todoAccess.updateTodo(todo, updatedTodo)
 
-  return updated
+  console.log(`UPDATED TODO: ${todo.todoId}`)
 }
-/*
-  
-const { groupId, title } = JSON.parse(event.body)
-
-    // imageId
-    // tiomestamep
-
-    if (!groupId || !title)
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: 'please provide a group id, title and description',
-        }),
-      }
-
-    // check if a group with the ID exists
-    await docClient
-    .get({
-      TableName: groupsTable,
-      Key: {
-        id: groupId,
-      },
-    })
-    .promise()
-
-    // If not, return an error
-    if (!validGroupId.Item)
-      return {
-        statusCode: 404,
-        body: JSON.stringify({
-          error: 'group not found',
-        }),
-      }
-
-    const imageId = uuid.v4()
-
-    
-
-*/
