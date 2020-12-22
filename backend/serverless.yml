@@ -4,6 +4,7 @@ service:
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
+  - serverless-offline
 
 # TODO: Uncomment to enable individual packaging
 # package:
