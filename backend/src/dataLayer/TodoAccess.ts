@@ -85,8 +85,24 @@ export class TodoAccess {
         },
         ExpressionAttributeValues: {
           ':todoName': updatedTodo.name,
-          ':dueDate': updatedTodo.name,
+          ':dueDate': updatedTodo.dueDate,
           ':done': updatedTodo.done
+        }
+      })
+      .promise()
+  }
+
+  async saveImage(todo: TodoItem, imageUrl: string): Promise<void> {
+    await this.docClient
+      .update({
+        TableName: this.todostable,
+        Key: {
+          userId: todo.userId,
+          createdAt: todo.createdAt
+        },
+        UpdateExpression: 'SET attachmentUrl = :imageUrl',
+        ExpressionAttributeValues: {
+          ':imageUrl': imageUrl
         }
       })
       .promise()

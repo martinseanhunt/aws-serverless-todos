@@ -4,22 +4,26 @@ import { TodoItem } from '../models/TodoItem'
 import { TodoAccess } from '../dataLayer/TodoAccess'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
-import { parseUserId } from '../auth/utils'
+import { createLogger } from '../utils/logger'
 
+const logger = createLogger('auth')
 const todoAccess = new TodoAccess()
 
 export async function getAllTodos(userId: string): Promise<TodoItem[]> {
+  logger.info('Getting all TODOs', {
+    user: userId
+  })
+
   return todoAccess.getAllTodos(userId)
 }
 
 export async function createTodo(
   createTodoRequest: CreateTodoRequest,
-  jwtToken: string
+  userId: string
 ): Promise<TodoItem> {
   const itemId = uuid.v4()
-  const userId = parseUserId(jwtToken)
 
-  return await todoAccess.createTodo({
+  const item = await todoAccess.createTodo({
     todoId: itemId,
     userId: userId,
     name: createTodoRequest.name,
@@ -28,6 +32,12 @@ export async function createTodo(
     done: false,
     attachmentUrl: null
   })
+
+  logger.info('ITEM CREATED', {
+    item
+  })
+
+  return item
 }
 
 export async function updateTodo(
@@ -38,12 +48,22 @@ export async function updateTodo(
   // Get the todo item that belongs to a user
   const todo = await todoAccess.getTodo(todoId, userId)
 
-  if (!todo) throw new Error('Todo not found with id for user')
+  if (!todo) {
+    logger.info('TODO NOT FOUND', {
+      todoId,
+      userId
+    })
+
+    throw new Error('Todo not found with id for user')
+  }
 
   // update the item
   await todoAccess.updateTodo(todo, updatedTodo)
 
-  console.log(`UPDATED TODO: ${todo.todoId}`)
+  logger.info('TODO UPDATED', {
+    todoId,
+    userId
+  })
 }
 
 export async function deleteTodo(
@@ -53,14 +73,54 @@ export async function deleteTodo(
   // Get the todo item that belongs to a user
   const todo = await todoAccess.getTodo(todoId, userId)
 
-  if (!todo) throw new Error('Todo not found with id for user')
+  if (!todo) {
+    logger.info('TODO NOT FOUND', {
+      todoId,
+      userId
+    })
+    throw new Error('Todo not found with id for user')
+  }
 
   // delete the item
   await todoAccess.deleteTodo(todo)
 
-  console.log(`DELETED TODO: ${todo.todoId}`)
+  logger.info('DELETED TODO', {
+    todoId,
+    userId
+  })
 }
 
-export async function getSignedUrl(todoId: string): Promise<string> {
-  return await todoAccess.getSignedUrl(`${todoId}-${new Date().toISOString()}`)
+export async function getSignedUrl(
+  todoId: string,
+  userId: string
+): Promise<string> {
+  const todo = await todoAccess.getTodo(todoId, userId)
+
+  if (!todo) {
+    logger.info('TODO NOT FOUND', {
+      todoId,
+      userId
+    })
+    throw new Error('Todo not found with id for user')
+  }
+
+  const imageId = `${todoId}-${new Date().toISOString()}`
+
+  const signedUrl = await todoAccess.getSignedUrl(imageId)
+
+  const imageUrl = `https://${process.env.IMAGES_BUCKET_NAME}.s3.amazonaws.com/${imageId}`
+
+  logger.info('SIGNED URL GENERATED', {
+    todoId,
+    imageUrl
+  })
+
+  await todoAccess.saveImage(todo, imageUrl)
+
+  logger.info('SAVED IMAGE URL', {
+    todoId,
+    imageUrl
+  })
+
+  return signedUrl
 }
