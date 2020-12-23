@@ -5,6 +5,7 @@ import {
   APIGatewayProxyResult,
   APIGatewayProxyHandler
 } from 'aws-lambda'
+
 import { getUserId } from '../utils'
 import { deleteTodo } from '../../businessLogic/todos'
 

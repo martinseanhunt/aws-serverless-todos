@@ -66,6 +66,9 @@ functions:
           path: todos
           authorizer: Auth
           cors: true
+          request:
+            schema:
+              application/json: ${file(src/requests/create-todo-request.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -80,6 +83,9 @@ functions:
           path: todos/{todoId}
           authorizer: Auth
           cors: true
+          request:
+            schema:
+              application/json: ${file(src/requests/update-todo-request.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
