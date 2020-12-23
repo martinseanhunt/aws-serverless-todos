@@ -1,12 +1,13 @@
 import * as AWS from 'aws-sdk'
-// import * as AWSXRay from 'aws-xray-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+
+// fixes type defenitions vs import
+const AWSXRay = require('aws-xray-sdk')
 
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 
-// TODO: implement Xray tracing
-// const XAWS = AWSXRay.captureAWS(AWS)
-const XAWS = AWS
+const XAWS = AWSXRay.captureAWS(AWS)
+// const XAWS = AWS
 
 import { TodoItem } from '../models/TodoItem'
 
@@ -126,6 +127,5 @@ function createDynamoDBClient() {
   }
   */
 
-  // @ts-ignore - TODO
   return new XAWS.DynamoDB.DocumentClient()
 }
