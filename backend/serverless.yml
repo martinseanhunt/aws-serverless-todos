@@ -5,6 +5,7 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-offline
+  - serverless-dynamodb-local
 
 # This does not appear to be working in a WSL2 environment
 # package:
@@ -26,6 +27,18 @@ provider:
     TODO_ID_INDEX: TodoIdIndex
     IMAGES_BUCKET_NAME: serverless-todo-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
+
+custom:
+  serverless-offline:
+    port: 3030
+
+  dynamodb:
+    stages:
+      - ${self:provider.stage}
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
 
 functions:
   Auth:

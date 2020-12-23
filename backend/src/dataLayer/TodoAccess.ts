@@ -6,8 +6,7 @@ const AWSXRay = require('aws-xray-sdk')
 
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 
-const XAWS = AWSXRay.captureAWS(AWS)
-// const XAWS = AWS
+const XAWS = !process.env.IS_OFFLINE ? AWSXRay.captureAWS(AWS) : AWS
 
 import { TodoItem } from '../models/TodoItem'
 
@@ -117,7 +116,6 @@ export class TodoAccess {
 }
 
 function createDynamoDBClient() {
-  /* TODO: set this up for offline DB
   if (process.env.IS_OFFLINE) {
     console.log('Creating a local DynamoDB instance')
     return new XAWS.DynamoDB.DocumentClient({
@@ -125,7 +123,6 @@ function createDynamoDBClient() {
       endpoint: 'http://localhost:8000'
     })
   }
-  */
 
   return new XAWS.DynamoDB.DocumentClient()
 }
